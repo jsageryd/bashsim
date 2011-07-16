@@ -25,7 +25,7 @@ SCRIPTDIR="$ROOT"/scripts
 OUTPUTDIR="$ROOT"/output
 
 # Where to execute things (this directory will be deleted and re-created)
-PLAYGROUND="$ROOT"/playground
+PLAYGROUND=/tmp/playground
 
 # The prompt to use, syntax is similar to bash PS1.
 # Possible special characters are as follows:
@@ -84,3 +84,5 @@ for script in "$SCRIPTDIR"/*; do
 done
 
 popd > /dev/null 2>&1
+
+[ -d "$PLAYGROUND" ] && rm -rf "$PLAYGROUND" > /dev/null 2>&1
