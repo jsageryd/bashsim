@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env bash --login
 
 # CLI interaction simulator
 # Johan Sageryd 2011-07-16
@@ -27,10 +27,38 @@ OUTPUTDIR="$ROOT"/output
 # Where to execute things (this directory will be deleted and re-created)
 PLAYGROUND="$ROOT"/playground
 
-# Decorate every executed line by prefixing with this
-PREFIX='$ '
+# The prompt to use, syntax is similar to bash PS1.
+# Possible special characters are as follows:
+#
+#  \h  the hostname (read from $P_HOST defined below)
+#  \u  the user (read from $P_USER defined below)
+#  \w  the working directory relative to $PLAYGROUND
+#  \n  newline
+#
+# In addition, after substitution the string will be evaluated
+# in order to expand any variables or command calls.
+# Any leading or trailing spaces must be escaped.
+PROMPT='\u@\h:~\w$(__git_ps1 " [%s]") \$\ '
 
-[ ! -d "$SCRIPTDIR" ] && { echo -e "Fatal error: There is no script dir ($SCRIPTDIR)"; exit 1; }
+# Constants that can be used in $PROMPT
+P_USER='mickey'
+P_HOST='home'
+
+expandprompt(){
+  cwd=$(pwd)
+  cwd=${cwd##$PLAYGROUND/}
+  cwd=${cwd##$PLAYGROUND}
+  [ ! -z $cwd ] && cwd=/"$cwd"
+  p="$1"
+  p="${p//\\u/$P_USER}"
+  p="${p//\\h/$P_HOST}"
+  p="${p//\\n/$(printf '\n\r')}"
+  p="${p//\\w/$cwd}"
+  p=$(eval echo "$p")
+  echo "$p"
+}
+
+[ ! -d "$SCRIPTDIR" ] && { echo "Fatal error: There is no script dir ($SCRIPTDIR)"; exit 1; }
 
 [ -d "$OUTPUTDIR" ] && rm -rf "$OUTPUTDIR" > /dev/null 2>&1
 mkdir -p "$OUTPUTDIR" > /dev/null 2>&1
@@ -48,7 +76,8 @@ for script in "$SCRIPTDIR"/*; do
     if [[ $line =~ ^\s*\* ]]; then
       eval ${line##'*'} > /dev/null 2>&1
     else
-      echo "$PREFIX$line" >> $outputfile
+      p=$(expandprompt "$PROMPT")
+      echo "$p$line" >> $outputfile
       eval $line >> $outputfile 2>&1
     fi
   done < "$script"
