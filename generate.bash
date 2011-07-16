@@ -69,6 +69,7 @@ mkdir -p "$PLAYGROUND" > /dev/null 2>&1
 pushd "$PLAYGROUND" > /dev/null 2>&1
 
 for script in "$SCRIPTDIR"/*; do
+  hasoutput=false
   outputfile="$OUTPUTDIR"/$(basename "$script")
   while read line; do
     [ -z "$line" ] && continue
@@ -76,11 +77,13 @@ for script in "$SCRIPTDIR"/*; do
     if [[ $line =~ ^\s*\* ]]; then
       eval ${line##'*'} > /dev/null 2>&1
     else
+      hasoutput=true
       p=$(expandprompt "$PROMPT")
       echo "$p$line" >> $outputfile
       eval $line >> $outputfile 2>&1
     fi
   done < "$script"
+  $hasoutput && echo $p >> $outputfile
 done
 
 popd > /dev/null 2>&1
