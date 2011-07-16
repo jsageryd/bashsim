@@ -1,0 +1,8 @@
+* export GIT_AUTHOR_DATE=2005-01-01T10:00:00Z
+* export GIT_COMMITTER_DATE=$GIT_AUTHOR_DATE
+mkdir repo && cd repo
+git init
+echo "Hello" > foo
+git add foo
+git commit -m 'Initial commit'
+git log
