@@ -37,8 +37,7 @@ PLAYGROUND=/tmp/playground
 #
 # In addition, after substitution the string will be evaluated
 # in order to expand any variables or command calls.
-# Any leading or trailing spaces must be escaped.
-PROMPT='\u@\h:~\w$(__git_ps1 " [%s]") \$\ '
+PROMPT='\u@\h:~\w$(__git_ps1 " [%s]") \$ '
 
 # Constants that can be used in $PROMPT
 P_USER='mickey'
@@ -54,7 +53,7 @@ expandprompt(){
   p="${p//\\h/$P_HOST}"
   p="${p//\\n/$(printf '\n\r')}"
   p="${p//\\w/$cwd}"
-  p=$(eval echo "$p")
+  p="$(eval echo \"$p\")"
   echo "$p"
 }
 
