@@ -2,7 +2,7 @@ CLI interaction simulator
 =========================
 
 Simulates user interaction with a shell and stores both the command strings
-themselves and their output (both STDOUT and STDERR) to files.
+themselves and their output (STDOUT and STDERR) to files.
 
 Usage
 ------------------
